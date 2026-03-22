@@ -1,0 +1,27 @@
+tools:
+  fs_tool:
+    enabled: true
+    description: "Lee y escribe archivos dentro de los paths permitidos"
+    requires_audit: true
+    risk_level: medium
+
+  web_tool:
+    enabled: true
+    description: "Busca en la web usando dominios de la allowlist"
+    requires_audit: true
+    risk_level: low
+
+  code_tool:
+    enabled: true
+    description: "Ejecuta código Python en sandbox con timeout"
+    requires_audit: true
+    risk_level: high
+    sandbox: true
+    timeout_seconds: 10
+
+  db_tool:
+    enabled: true
+    description: "Ejecuta queries de solo lectura contra la base de datos"
+    requires_audit: true
+    risk_level: medium
+    readonly: true

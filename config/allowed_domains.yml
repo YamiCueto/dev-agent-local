@@ -1,0 +1,14 @@
+allowed_domains:
+  - docs.python.org
+  - pypi.org
+  - stackoverflow.com
+  - github.com
+  - developer.mozilla.org
+  - docs.anthropic.com
+  - docs.langchain.com
+
+blocked_methods:
+  - POST
+  - PUT
+  - DELETE
+  - PATCH

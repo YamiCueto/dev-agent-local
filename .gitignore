@@ -1,0 +1,31 @@
+# Secrets
+.env
+*.env
+*.pem
+*.key
+*secret*
+*credential*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Logs y audit
+/tmp/
+*.jsonl
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code internal
+.claude/

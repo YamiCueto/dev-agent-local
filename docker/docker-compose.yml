@@ -1,0 +1,27 @@
+services:
+  agent:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: dev-agent-local:latest
+    container_name: dev-agent
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1}
+      - AGENT_DB_PATH=/tmp/agent-workspace/agent.db
+    volumes:
+      - agent-workspace:/tmp/agent-workspace
+      - agent-audit:/tmp/agent-audit
+    security_opt:
+      - seccomp:./seccomp-profile.json
+      - no-new-privileges:true
+    read_only: false
+    cap_drop:
+      - ALL
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  agent-workspace:
+  agent-audit:

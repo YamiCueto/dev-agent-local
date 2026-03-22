@@ -1,0 +1,14 @@
+allowed_paths:
+  read:
+    - ./examples
+    - ./wiki
+    - /tmp/agent-workspace
+  write:
+    - /tmp/agent-workspace
+
+denied_patterns:
+  - "*.env"
+  - "*.pem"
+  - "*.key"
+  - "*secret*"
+  - "*credential*"
