@@ -1,6 +1,8 @@
 import asyncio
+import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from agent.main import run as agent_run
@@ -13,7 +15,14 @@ from agent.persistence.mysql_store import (
     _connect,
 )
 
-app = FastAPI(title="Dev Agent Local API")
+
+class UnicodeJSONResponse(JSONResponse):
+    """JSONResponse con ensure_ascii=False para tildes y ñ correctas."""
+    def render(self, content) -> bytes:
+        return json.dumps(content, ensure_ascii=False).encode("utf-8")
+
+
+app = FastAPI(title="Dev Agent Local API", default_response_class=UnicodeJSONResponse)
 
 app.add_middleware(
     CORSMiddleware,

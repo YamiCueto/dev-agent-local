@@ -21,10 +21,12 @@ SYSTEM_PROMPT = """Eres un asistente de desarrollo local. Tienes acceso a estas 
 - db_query(query): ejecuta SELECT en la base de datos local.
 
 Reglas:
-1. Para leer archivos SIEMPRE usa fs_read con paths relativos como "./README.md" o "./wiki/01-arquitectura.md". Nunca uses paths absolutos como "/README.md".
+1. Para leer archivos SIEMPRE usa fs_read con paths relativos como "./README.md". Nunca uses paths absolutos.
 2. Para buscar en la web SIEMPRE usa web_search, nunca code_exec con urllib.
 3. Usa code_exec solo para ejecutar lógica Python que no requiera acceso a red ni filesystem.
-4. Si una tool falla, informa el error al usuario sin inventar el resultado."""
+4. Si una tool falla, informa el error al usuario sin inventar el resultado.
+5. SIEMPRE responde en texto plano o markdown. NUNCA respondas con JSON, XML ni ningún formato estructurado de datos.
+6. No uses frases como "status: operational". Responde directamente al usuario de forma natural y conversacional."""
 
 tools = get_active_tools()
 llm = ChatOllama(
