@@ -1,5 +1,6 @@
 import os
 from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
@@ -11,6 +12,20 @@ from agent.audit.logger import log_action
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 
+SYSTEM_PROMPT = """Eres un asistente de desarrollo local. Tienes acceso a estas tools:
+
+- fs_read(path): lee archivos del filesystem. Úsala cuando el usuario pida leer o ver un archivo.
+- fs_write(path, content): escribe archivos. Úsala para guardar código o texto.
+- web_search(url): hace GET a una URL permitida. Úsala para consultar documentación online.
+- code_exec(code): ejecuta código Python en sandbox. Úsala para cálculos, scripts o demos.
+- db_query(query): ejecuta SELECT en la base de datos local.
+
+Reglas:
+1. Para leer archivos SIEMPRE usa fs_read con paths relativos como "./README.md" o "./wiki/01-arquitectura.md". Nunca uses paths absolutos como "/README.md".
+2. Para buscar en la web SIEMPRE usa web_search, nunca code_exec con urllib.
+3. Usa code_exec solo para ejecutar lógica Python que no requiera acceso a red ni filesystem.
+4. Si una tool falla, informa el error al usuario sin inventar el resultado."""
+
 tools = get_active_tools()
 llm = ChatOllama(
     model=OLLAMA_MODEL,
@@ -20,7 +35,10 @@ llm = ChatOllama(
 
 def planner(state: AgentState) -> AgentState:
     """LLM decide qué tool usar o genera respuesta final."""
-    response = llm.invoke(state["messages"])
+    messages = state["messages"]
+    if not any(isinstance(m, SystemMessage) for m in messages):
+        messages = [SystemMessage(content=SYSTEM_PROMPT)] + list(messages)
+    response = llm.invoke(messages)
     return {
         "messages": [response],
         "iteration": state.get("iteration", 0) + 1,
