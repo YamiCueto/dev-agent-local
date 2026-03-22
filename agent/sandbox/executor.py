@@ -5,6 +5,18 @@ from RestrictedPython.PrintCollector import PrintCollector
 
 TIMEOUT_SECONDS = 10
 
+# Builtins seguros adicionales no incluidos en safe_globals por defecto
+_EXTRA_BUILTINS = {
+    "sum": sum, "min": min, "max": max, "abs": abs, "round": round,
+    "sorted": sorted, "reversed": reversed, "enumerate": enumerate,
+    "zip": zip, "map": map, "filter": filter, "any": any, "all": all,
+    "len": len, "list": list, "dict": dict, "set": set, "tuple": tuple,
+    "int": int, "float": float, "str": str, "bool": bool,
+    "isinstance": isinstance, "issubclass": issubclass,
+    "hasattr": hasattr, "type": type, "repr": repr,
+    "range": range, "chr": chr, "ord": ord, "hex": hex, "oct": oct, "bin": bin,
+}
+
 
 def _run_restricted(byte_code: bytes) -> str:
     """
@@ -13,12 +25,13 @@ def _run_restricted(byte_code: bytes) -> str:
       _print._call_print(x)         ← print al collector
     El collector queda en restricted_locals['_print'].
     """
+    safe_builtins = {**safe_globals["__builtins__"], **_EXTRA_BUILTINS}
     restricted_globals = {
         **safe_globals,
         "_print_": PrintCollector,   # clase como factory, no instancia
         "_getiter_": iter,
         "_getattr_": getattr,
-        "__builtins__": safe_globals["__builtins__"],
+        "__builtins__": safe_builtins,
     }
     restricted_locals: dict = {}
     exec(byte_code, restricted_globals, restricted_locals)  # noqa: S102
